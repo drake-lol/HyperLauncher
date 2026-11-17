@@ -10,6 +10,12 @@ On HyperOS, switching the default launcher away from the system one turns gestur
 
 Recorded on Lawnchair.
 
+| Open and close | Back gesture | Quick switch | Rapid open/close |
+|---|---|---|---|
+| ![Open an app from its icon and swipe home](previews/smart_open_close.gif) | ![Back out of an app to its icon](previews/smart_back.gif) | ![Swipe along the bottom to switch apps](previews/smart_quick_switch.gif) | ![Open and close three times in a row](previews/smart_rapid.gif) |
+
+Recorded on Smart Launcher.
+
 ## What it does
 
 - **Gesture navigation with any launcher.** Swipe up for home, swipe and hold for recents, swipe along the bottom to switch apps, back from either edge.

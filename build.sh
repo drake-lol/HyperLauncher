@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e
 cd "$(dirname "$0")"
-BT=~/Android/Sdk/build-tools/36.0.0
-PLAT=~/Android/Sdk/platforms/android-36/android.jar
+SDK=${ANDROID_HOME:-$HOME/Android/Sdk}
+BT=$SDK/build-tools/36.0.0
+PLAT=$SDK/platforms/android-36/android.jar
 rm -rf build && mkdir -p build/classes build/dex build/stubs
 # stand-ins for hidden framework classes: compiled against, never packaged
 javac --release 17 -Xlint:-options -cp $PLAT -d build/stubs $(find stubs -name '*.java')

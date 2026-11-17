@@ -1,0 +1,58 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK packages
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "build-tools;36.0.0" "platforms;android-36" > /dev/null
+
+      # Without the secret (forks, pull requests) build.sh makes a throwaway key: the APK builds
+      # but cannot update an installed release.
+      - name: Restore signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then echo "$KEYSTORE_B64" | base64 -d > debug.jks; fi
+
+      - name: Build
+        run: |
+          ./build.sh
+          cp build/module.apk HyperLauncher.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HyperLauncher
+          path: HyperLauncher.apk
+
+      # Only with the real key: a release signed with a throwaway one could not be updated later.
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "::warning::No KEYSTORE_B64 secret: built, but not publishing a release signed with a throwaway key."
+          elif gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            echo "Release $GITHUB_REF_NAME already exists; leaving it as it is."
+          else
+            gh release create "$GITHUB_REF_NAME" HyperLauncher.apk --title "HyperLauncher ${GITHUB_REF_NAME#v}" --generate-notes
+          fi

@@ -35,7 +35,7 @@ Tested with Smart Launcher and Lawnchair. Other launchers should work: Launcher3
 
 ## Install
 
-1. Install `HyperLauncher.apk`.
+1. Install `HyperLauncher.apk` from the [latest release](https://github.com/drake-lol/HyperLauncher/releases/latest).
 2. Enable the module in LSPosed and tick its scope:
    - `com.miui.home` (System launcher)
    - your launcher, for example `ginlemon.flowerfree` or `app.lawnchair`
@@ -72,6 +72,10 @@ Needs a JDK (17 or newer) and the Android SDK with build-tools 36.0.0 and platfo
 ```
 
 The APK is written to `build/module.apk`. A debug signing key (`debug.jks`) is created on first build; it is git-ignored.
+
+Set `ANDROID_HOME` if your SDK is somewhere else.
+
+GitHub Actions builds every push and pull request and uploads the APK as an artifact. Pushing a tag such as `v1.2` also publishes a release with the APK attached, when the signing key is present as the `KEYSTORE_B64` repository secret (the base64 of `debug.jks`).
 
 ## How it works
 
